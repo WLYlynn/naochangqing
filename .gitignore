@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+*.wav
+*.txt
+!requirements.txt
+!render.yaml
+input/
+output/
+rooms/
