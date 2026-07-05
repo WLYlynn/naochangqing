@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家属端 - 报告</title>
+    <style>
+        *{margin:0;padding:0}
+        body{
+            font-family:'Microsoft YaHei',sans-serif;
+            background:#f5f5f5;
+            min-height:100vh;
+            padding:20px;
+        }
+        .container{max-width:500px;margin:0 auto;}
+
+        .header{
+            background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color:white;
+            padding:30px;
+            border-radius:20px;
+            text-align:center;
+            margin-bottom:20px;
+        }
+        .header h1{font-size:28px;}
+        .header .sub{opacity:0.9;margin-top:10px;font-size:14px;}
+
+        .card{
+            background:white;
+            border-radius:20px;
+            padding:25px;
+            margin-bottom:20px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.08);
+        }
+        .card h3{
+            font-size:18px;
+            color:#333;
+            margin-bottom:15px;
+        }
+
+        .btn{
+            width:100%;
+            padding:16px;
+            border:none;
+            border-radius:15px;
+            font-size:18px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:all 0.3s ease;
+            margin:5px 0;
+        }
+        .btn:active{transform:scale(0.95);}
+        .btn-primary{background:#667eea;color:white;}
+        .btn-success{background:#4ecdc4;color:white;}
+
+        .back-link{
+            display:inline-block;
+            color:#667eea;
+            text-decoration:none;
+            margin-top:15px;
+            font-size:14px;
+        }
+
+        .room-code-display{
+            background:#f8f9fa;
+            border-radius:15px;
+            padding:20px;
+            text-align:center;
+            margin:15px 0;
+            border:2px dashed #667eea;
+        }
+        .room-code-display .label{
+            font-size:14px;
+            color:#666;
+        }
+        .room-code-display .code{
+            font-size:48px;
+            font-weight:bold;
+            color:#667eea;
+            letter-spacing:8px;
+            font-family:'Courier New',monospace;
+            margin:5px 0;
+        }
+        .room-code-display .hint{
+            font-size:13px;
+            color:#999;
+        }
+
+        .pair-status{
+            text-align:center;
+            padding:10px;
+            border-radius:12px;
+            margin:10px 0;
+            font-size:14px;
+        }
+        .pair-status.waiting{background:#fff3cd;color:#856404;}
+        .pair-status.paired{background:#d4edda;color:#155724;}
+
+        .stat-row{
+            display:flex;
+            gap:15px;
+            margin:10px 0;
+        }
+        .stat-item{
+            flex:1;
+            text-align:center;
+            padding:15px;
+            background:#f8f9fa;
+            border-radius:15px;
+        }
+        .stat-item .number{
+            font-size:32px;
+            font-weight:bold;
+            color:#667eea;
+        }
+        .stat-item .label{
+            font-size:14px;
+            color:#666;
+            margin-top:5px;
+        }
+
+        .emotion-tag{
+            display:inline-block;
+            padding:4px 12px;
+            border-radius:20px;
+            font-size:13px;
+            margin:3px 4px 3px 0;
+        }
+        .emotion-tag.happy{background:#ffd93d;color:#333;}
+        .emotion-tag.calm{background:#b5d8b5;color:#333;}
+        .emotion-tag.sad{background:#a8d8ea;color:#333;}
+        .emotion-tag.worry{background:#ffb3b3;color:#333;}
+        .emotion-tag.lonely{background:#d4a5a5;color:white;}
+        .emotion-tag.neutral{background:#e8e8e8;color:#333;}
+
+        .suggestion-item{
+            padding:12px 16px;
+            background:#f0f7ff;
+            border-radius:12px;
+            margin:8px 0;
+            border-left:3px solid #667eea;
+            font-size:15px;
+        }
+
+        .hidden{display:none !important;}
+        .mt-10{margin-top:10px;}
+
+        @media (max-width:480px){
+            .stat-row{flex-direction:column;gap:8px;}
+            .stat-item{padding:12px;}
+            .stat-item .number{font-size:24px;}
+            .room-code-display .code{font-size:36px;}
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 评估报告</h1>
+            <div class="sub">
+                <span id="updateTime">更新时间：--</span>
+            </div>
+        </div>
+
+        <div class="card" id="pairCard">
+            <h3>🔗 配对老人</h3>
+
+            <div class="room-code-display" id="roomCodeDisplay">
+                <div class="label">📱 您的房间码</div>
+                <div class="code" id="roomCode">------</div>
+                <div class="hint">把房间码告诉老人，让老人输入配对</div>
+            </div>
+
+            <button class="btn btn-primary" id="createBtn">📱 创建房间</button>
+
+            <div class="pair-status waiting" id="pairStatus">⏳ 等待老人配对...</div>
+
+            <div style="font-size:13px;color:#999;text-align:center;margin-top:10px;">
+                配对后自动接收老人的评估报告
+            </div>
+        </div>
+
+        <div class="card hidden" id="reportCard">
+            <h3>
+                📋 对话报告
+                <span style="font-size:12px;color:#999;float:right;font-weight:normal;" id="reportDate">2024-01-15</span>
+            </h3>
+
+            <div class="stat-row">
+                <div class="stat-item">
+                    <div class="number" id="totalMsg">0</div>
+                    <div class="label">对话总数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number" id="positiveRate">0%</div>
+                    <div class="label">积极情绪占比</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number" id="alertCount">0</div>
+                    <div class="label">需关注消息</div>
+                </div>
+            </div>
+
+            <div style="margin:15px 0;">
+                <div style="font-size:14px;color:#666;margin-bottom:8px;">🎭 情绪分布</div>
+                <div id="emotionTags">
+                    <span class="emotion-tag happy">😊 开心 0次</span>
+                    <span class="emotion-tag calm">😌 平静 0次</span>
+                    <span class="emotion-tag neutral">😐 中性 0次</span>
+                    <span class="emotion-tag sad">😢 难过 0次</span>
+                    <span class="emotion-tag worry">😰 担忧 0次</span>
+                    <span class="emotion-tag lonely">😔 孤独 0次</span>
+                </div>
+            </div>
+
+            <div style="margin:15px 0;">
+                <div style="font-size:14px;color:#666;margin-bottom:8px;">🔍 关键发现</div>
+                <div id="keyPoints">
+                    <div class="suggestion-item">📊 暂无数据，等待老人对话</div>
+                </div>
+            </div>
+
+            <div style="margin:15px 0;">
+                <div style="font-size:14px;color:#666;margin-bottom:8px;">💡 建议</div>
+                <div id="suggestions">
+                    <div class="suggestion-item">💡 暂无建议</div>
+                </div>
+            </div>
+
+            <button class="btn btn-success" id="refreshBtn">🔄 刷新报告</button>
+        </div>
+
+        <a href="/" class="back-link">← 返回首页</a>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        const SAVED_ROOM_KEY = 'family_room_code';
+
+        const pairCard = document.getElementById('pairCard');
+        const reportCard = document.getElementById('reportCard');
+        const roomCode = document.getElementById('roomCode');
+        const createBtn = document.getElementById('createBtn');
+        const pairStatus = document.getElementById('pairStatus');
+
+        const updateTime = document.getElementById('updateTime');
+        const reportDate = document.getElementById('reportDate');
+        const totalMsg = document.getElementById('totalMsg');
+        const positiveRate = document.getElementById('positiveRate');
+        const alertCount = document.getElementById('alertCount');
+        const emotionTags = document.getElementById('emotionTags');
+        const keyPoints = document.getElementById('keyPoints');
+        const suggestions = document.getElementById('suggestions');
+
+        let currentRoomCode = null;
+        let pollingInterval = null;
+
+        // ========== 加载真实报告 ==========
+        async function loadReports() {
+            const res = await fetch(`${API_BASE}/reports`);
+            if (!res.ok) throw new Error('获取报告列表失败');
+            const data = await res.json();
+            if (data.reports && data.reports.length > 0) {
+                const latest = data.reports[0];
+                await loadReportContent(latest.filename);
+                updateTime.textContent = '更新时间：' + latest.timestamp;
+            } else {
+                document.getElementById('keyPoints').innerHTML = '<div class="suggestion-item">📊 暂无报告，请先让老人完成对话。</div>';
+                document.getElementById('suggestions').innerHTML = '<div class="suggestion-item">💡 等待老人对话结束后生成报告。</div>';
+            }
+        }
+
+        async function loadReportContent(filename) {
+            const res = await fetch(`${API_BASE}/report/${filename}`);
+            if (!res.ok) throw new Error('获取报告内容失败');
+            const data = await res.json();
+            parseAndDisplayReport(data.content);
+        }
+
+        function parseAndDisplayReport(content) {
+            const totalMatch = content.match(/📊 总分：(\d+)\/70/);
+            const total = totalMatch ? parseInt(totalMatch[1]) : 0;
+            const riskMatch = content.match(/风险等级：(\S+)/);
+            const risk = riskMatch ? riskMatch[1] : '未知';
+
+            const scorePattern = /([\u4e00-\u9fa5]{2,5})[：:]\s*([█░]+)\s*(\d+)\/10/g;
+            const scores = {};
+            let match;
+            while ((match = scorePattern.exec(content)) !== null) {
+                scores[match[1]] = parseInt(match[3]);
+            }
+
+            const detailMatch = content.match(/详细分析[：:]\s*([^\n]+)/);
+            const detail = detailMatch ? detailMatch[1] : '';
+            const suggMatch = content.match(/具体建议[：:]\s*([^\n]+)/);
+            const suggestion = suggMatch ? suggMatch[1] : '';
+
+            const attentionPoints = [];
+            const attentionRegex = /(\d+)\.\s*([^\n]+)/g;
+            let attMatch;
+            while ((attMatch = attentionRegex.exec(content)) !== null) {
+                attentionPoints.push(attMatch[2]);
+            }
+
+            updateUI(total, risk, scores, detail, suggestion, attentionPoints);
+        }
+
+        function updateUI(total, risk, scores, detail, suggestion, attentionPoints) {
+            totalMsg.textContent = Object.keys(scores).length;
+            const avgScore = total / 7;
+            const rate = Math.round((avgScore / 10) * 100);
+            positiveRate.textContent = rate + '%';
+            alertCount.textContent = attentionPoints.length;
+
+            const emotionColors = {
+                '词汇丰富度': 'happy',
+                '逻辑连贯性': 'calm',
+                '信息密度': 'neutral',
+                '记忆表现': 'sad',
+                '语言流畅度': 'calm',
+                '定向能力': 'happy',
+                '韵律自然度': 'neutral'
+            };
+            let emotionHtml = '';
+            for (const [name, score] of Object.entries(scores)) {
+                const emoji = score >= 8 ? '😊' : score >= 5 ? '😐' : '😢';
+                const cls = emotionColors[name] || 'neutral';
+                emotionHtml += `<span class="emotion-tag ${cls}">${emoji} ${name} ${score}分</span>`;
+            }
+            emotionTags.innerHTML = emotionHtml;
+
+            let points = [];
+            if (risk.includes('低')) points.push('📊 整体认知状态良好，风险较低');
+            else if (risk.includes('中')) points.push('📊 存在一定认知风险，建议关注');
+            else if (risk.includes('高')) points.push('📊 风险较高，建议及时就医');
+            if (total < 40) points.push('⚠️ 总分偏低，建议进行专业评估');
+            if (attentionPoints.length > 0) points.push('📌 ' + attentionPoints.join('、'));
+            if (points.length === 0) points.push('📊 暂无关键发现');
+            keyPoints.innerHTML = points.map(p => `<div class="suggestion-item">${p}</div>`).join('');
+
+            let suggs = [];
+            if (detail) suggs.push('💡 ' + detail);
+            if (suggestion) suggs.push('💡 ' + suggestion);
+            if (suggs.length === 0) suggs.push('💡 继续保持良好状态，定期关注');
+            suggestions.innerHTML = suggs.map(s => `<div class="suggestion-item">${s}</div>`).join('');
+        }
+
+        // ========== 轮询检查报告 ==========
+        function startPolling(roomCode) {
+            if (pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`${API_BASE}/room_reports/${roomCode}`);
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    if (data.reports && data.reports.length > 0) {
+                        pairStatus.textContent = '✅ 收到新报告！';
+                        pairStatus.className = 'pair-status paired';
+                        setTimeout(() => {
+                            pairCard.style.display = 'none';
+                            reportCard.classList.remove('hidden');
+                            const latest = data.reports[data.reports.length - 1];
+                            updateTime.textContent = '更新时间：' + new Date().toLocaleString();
+                            parseAndDisplayReport(latest.content);
+                        }, 500);
+                        clearInterval(pollingInterval);
+                    }
+                } catch (e) {
+                    console.log('轮询出错:', e);
+                }
+            }, 3000);
+        }
+
+        // ========== 创建房间 ==========
+        createBtn.onclick = async function() {
+            this.textContent = '⏳ 创建中...';
+            this.disabled = true;
+            try {
+                const res = await fetch(`${API_BASE}/create_room`, { method: 'POST' });
+                if (!res.ok) throw new Error('创建失败');
+                const data = await res.json();
+                const roomCode = data.room_code;
+                document.getElementById('roomCode').textContent = roomCode;
+                currentRoomCode = roomCode;
+
+                // 保存到 localStorage
+                localStorage.setItem(SAVED_ROOM_KEY, roomCode);
+
+                this.textContent = '✅ 已创建';
+                this.style.background = '#4ecdc4';
+                pairStatus.textContent = '📱 房间码已生成，等待老人输入配对...';
+                pairStatus.className = 'pair-status waiting';
+                startPolling(roomCode);
+            } catch (e) {
+                alert('创建房间失败: ' + e.message);
+                this.textContent = '📱 创建房间';
+                this.disabled = false;
+            }
+        };
+
+        // ========== 刷新报告 ==========
+        document.getElementById('refreshBtn').onclick = async function() {
+            if (!currentRoomCode) {
+                alert('请先创建房间');
+                return;
+            }
+            this.textContent = '⏳ 加载中...';
+            this.disabled = true;
+            try {
+                const res = await fetch(`${API_BASE}/room_reports/${currentRoomCode}`);
+                if (!res.ok) throw new Error('获取失败');
+                const data = await res.json();
+                if (data.reports && data.reports.length > 0) {
+                    const latest = data.reports[data.reports.length - 1];
+                    updateTime.textContent = '更新时间：' + new Date().toLocaleString();
+                    parseAndDisplayReport(latest.content);
+                } else {
+                    alert('暂无报告');
+                }
+            } catch (e) {
+                alert('刷新失败: ' + e.message);
+            } finally {
+                setTimeout(() => {
+                    this.textContent = '🔄 刷新报告';
+                    this.disabled = false;
+                }, 1000);
+            }
+        };
+
+        // ========== 页面加载时恢复房间码 ==========
+        (function restoreRoom() {
+            const saved = localStorage.getItem(SAVED_ROOM_KEY);
+            if (saved) {
+                document.getElementById('roomCode').textContent = saved;
+                currentRoomCode = saved;
+                startPolling(saved);
+                createBtn.textContent = '✅ 已加载';
+                createBtn.style.background = '#4ecdc4';
+                createBtn.disabled = true;
+                pairStatus.textContent = '📱 已恢复房间码，等待报告...';
+                pairStatus.className = 'pair-status waiting';
+            }
+        })();
+    </script>
+</body>
+</html>

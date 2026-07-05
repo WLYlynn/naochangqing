@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>脑长青</title>
+    <style>
+        *{margin:0;padding:0}
+        body{
+            width:100vw;height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family:'Microsoft YaHei',sans-serif;
+        }
+        .container{text-align:center;color:white;}
+        h1{font-size:48px;margin-bottom:20px;}
+        p{font-size:20px;margin-bottom:40px;opacity:0.9;}
+        .btn-group{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;}
+        .btn{
+            padding:20px 60px;
+            font-size:24px;
+            border:none;
+            border-radius:50px;
+            cursor:pointer;
+            transition:all 0.3s ease;
+            font-weight:bold;
+        }
+        .btn-family{background:#4ecdc4;color:white;}
+        .btn-elderly{background:#4ffd93d;color:#333;}
+        .btn:hover{transform:scale(1.05);box-shadow:0 10px 30px rgba(0,0,0,0.3);}
+        .btn:active{transform:scale(0.95);}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👋 欢迎使用</h1>
+        <p>请选择您的角色</p>
+        <div class="btn-group">
+            <button class="btn btn-family" onclick="location.href='/family'">👨‍👩‍👦 我是家属</button>
+            <button class="btn btn-elderly" onclick="location.href='/elderly'">👴 我是老人</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+numpy
+librosa
+soundfile
+requests
+websocket-client
+matplotlib
+python-multipart
+pyaudio

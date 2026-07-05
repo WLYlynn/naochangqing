@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+*{margin:0;padding:0}
+body{
+    width:100vw;height:100vh;
+    height: 100dvh;
+    background:url("/static/bg_house.jpg") no-repeat center;
+    background-size:cover;
+    background-attachment: fixed;
+    -webkit-backgroud-size: cover;
+    overflow:hidden;
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+
+.pair-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.pair-box {
+    background: rgba(255,255,255,0.95);
+    border-radius: 30px;
+    padding: 40px 30px;
+    max-width: 400px;
+    width: 85%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.pair-box h2 {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.pair-box .sub {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.pair-input {
+    width: 80%;
+    padding: 16px;
+    font-size: 28px;
+    text-align: center;
+    letter-spacing: 10px;
+    border: 3px solid #e0e0e0;
+    border-radius: 15px;
+    outline: none;
+    font-family: 'Courier New', monospace;
+    margin: 10px auto 20px;
+}
+
+.pair-input:focus {
+    border-color: #667eea;
+}
+
+.pair-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 15px;
+    background: #4ecdc4;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pair-btn:active {
+    transform: scale(0.95);
+}
+
+.pair-btn:hover {
+    opacity: 0.9;
+}
+
+.pair-back {
+    display: inline-block;
+    color: #667eea;
+    text-decoration: none;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ========== 新增：开始聊天覆盖层 ========== */
+.start-chat-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 90;
+}
+
+.start-chat-box {
+    background: rgba(255,255,255,0.95);
+    border-radius: 30px;
+    padding: 40px 30px;
+    max-width: 400px;
+    width: 85%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: slideIn 0.5s ease;
+}
+
+.start-chat-box h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.start-chat-box .sub {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.start-chat-btn {
+    width: 100%;
+    padding: 18px;
+    font-size: 22px;
+    font-weight: bold;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+}
+
+.start-chat-btn:active {
+    transform: scale(0.95);
+}
+
+/* ========== 新增：结束聊天按钮 ========== */
+.end-chat-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    border: 2px solid rgba(255,100,100,0.5);
+    border-radius: 50px;
+    background: rgba(255,255,255,0.9);
+    color: #e74c3c;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    display: block;
+}
+
+.end-chat-btn:hover {
+    background: rgba(255,100,100,0.1);
+}
+
+.end-chat-btn:active {
+    transform: scale(0.95);
+    background: rgba(255,100,100,0.2);
+}
+
+/* ========== 新增：聊天结束提示覆盖层 ========== */
+.chat-end-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 95;
+}
+
+.chat-end-box {
+    background: rgba(255,255,255,0.95);
+    border-radius: 30px;
+    padding: 40px 30px;
+    max-width: 400px;
+    width: 85%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: slideIn 0.5s ease;
+}
+
+.chat-end-box .end-icon {
+    font-size: 64px;
+    margin-bottom: 15px;
+}
+
+.chat-end-box h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.chat-end-box .sub {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.robot-container {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    width: min(70vh, 70vw);
+    aspect-ratio: 1/1;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    z-index: 10;
+}
+
+.robot-container:hover {
+    transform: translate(-50%, -55%) scale(1.05);
+}
+
+.robot {
+    width: 100%;
+    height: 100%;
+    background: url("/static/robot.png") no-repeat center;
+    background-size: contain;
+    transition: all 0.3s ease;
+    animation: floatBreath 2.5s ease-in-out infinite;
+}
+
+.robot.jump {
+    animation: jumpSpin 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards !important;
+}
+.robot.talk {
+    animation: talkShake 1.0s ease-in-out infinite !important;
+}
+.robot.think {
+    animation: thinkSway 1.5s ease-in-out infinite !important;
+}
+.robot.happy {
+    animation: happyBounce 1.2s ease-in-out infinite !important;
+}
+
+@keyframes floatBreath {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-25px) scale(1.03); }
+}
+@keyframes jumpSpin {
+    0% { transform: translateY(0) scale(1) rotate(0deg); }
+    30% { transform: translateY(-80px) scale(1.1) rotate(-10deg); }
+    60% { transform: translateY(-100px) scale(1.15) rotate(10deg); }
+    100% { transform: translateY(0) scale(1) rotate(0deg); }
+}
+@keyframes talkShake {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-10px) rotate(-6deg); }
+    75% { transform: translateX(10px) rotate(6deg); }
+}
+@keyframes thinkSway {
+    0%, 100% { transform: rotate(-8deg) translateY(0); }
+    50% { transform: rotate(8deg) translateY(-15px); }
+}
+@keyframes happyBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-30px) scale(1.1); }
+    60% { transform: translateY(-15px) scale(1.05); }
+}
+
+.breath-indicator {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    opacity: 0.8;
+}
+
+.breath-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.8);
+    animation: dotPulse 1.5s ease-in-out infinite;
+}
+.breath-dot:nth-child(2) { animation-delay: 0.3s; }
+.breath-dot:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes dotPulse {
+    0%, 100% { transform: scale(0.5); opacity: 0.3; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+.status-badge {
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 8px 24px;
+    border-radius: 25px;
+    font-size: 15px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: all 0.5s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    pointer-events: none;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+.status-badge.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.bottom {
+    position: absolute;
+    bottom: 2%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    max-width: 700px;
+    background: rgba(255,255,255,0.93);
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(255,220,160,0.3);
+    border-radius: 40px;
+    padding: 16px;
+    z-index: 20;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+.input-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+}
+
+.text-input {
+    flex: 1;
+    height: 65px;
+    padding: 0 20px;
+    border: 2px solid rgba(255,220,160,0.3);
+    border-radius: 32px;
+    font-size: 18px;
+    background: rgba(255,255,255,0.9);
+    color: #5a3d2b;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: 'Microsoft YaHei', sans-serif;
+    min-width: 0;
+}
+.text-input:focus {
+    border-color: rgba(255,200,100,0.6);
+    box-shadow: 0 0 20px rgba(255,200,100,0.2);
+}
+.text-input::placeholder {
+    color: #b8956a;
+    font-size: 16px;
+}
+
+.btn {
+    width: auto;
+    min-width: 120px;
+    height: 65px;
+    padding: 0 30px;
+    font-size: 20px;
+    border: none;
+    background: rgba(255,245,210,0.9);
+    color: #5a3d2b;
+    border-radius: 32px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    letter-spacing: 2px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+.btn:hover {
+    background: rgba(255,225,140,0.9);
+    transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba(255,200,100,0.3);
+}
+.btn:active { transform: scale(0.98); }
+
+.btn.recording {
+    background: rgba(255,100,100,0.9);
+    color: white;
+    animation: recordingPulse 1.5s infinite;
+}
+
+@keyframes recordingPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,100,100,0.4); }
+    50% { box-shadow: 0 0 0 15px rgba(255,100,100,0); }
+}
+
+.chat-messages {
+    margin-top: 12px;
+    max-height: 80px;
+    overflow-y: auto;
+    padding: 0 10px;
+}
+.chat-message {
+    padding: 8px 16px;
+    margin-bottom: 6px;
+    border-radius: 20px;
+    font-size: 15px;
+    animation: messageIn 0.3s ease;
+}
+.chat-message.user {
+    background: rgba(255,245,210,0.8);
+    text-align: right;
+    color: #5a3d2b;
+}
+.chat-message.bot {
+    background: rgba(200,230,255,0.8);
+    text-align: left;
+    color: #2c3e50;
+}
+@keyframes messageIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 2px; }
+
+/* ========== 响应式调整 ========== */
+@media (max-width: 768px) {
+    .robot-container { width: min(50vh, 60vw); top: 45%; }
+    .bottom { width: 80%; padding: 12px; }
+    .input-group { flex-direction: column; gap: 10px; }
+    .text-input { width: 100%; height: 55px; font-size: 16px; padding: 0 16px; }
+    .btn { width: 100%; height: 55px; font-size: 18px; min-width: unset; }
+    .end-chat-btn { width: 100%; height: 50px; font-size: 16px; }
+    .chat-messages { max-height: 60px; }
+    .pair-box { padding: 30px 20px; }
+    .pair-box h2 { font-size: 24px; }
+    .pair-input { font-size: 22px; }
+    .start-chat-box { padding: 30px 20px; }
+    .start-chat-box h2 { font-size: 24px; }
+}
+
+@media (max-width: 480px) {
+    .robot-container { width: min(90vh, 95vw); top: 55%; }
+    .bottom { width: 90%; padding: 10px; }
+    .text-input { height: 45px; font-size: 14px; padding: 0 1px; }
+    .btn { height: 45px; font-size: 16px; margin-bottom: 4px;}
+    .end-chat-btn { height: 42px; font-size: 15px; margin_top:6px; }
+    .status-badge { font-size: 12px; padding: 6px 16px; top: -28px; }
+    .breath-indicator { bottom: -20px; }
+    .breath-dot { width: 5px; height: 5px; }
+    .chat-messages { max-height: 50px; }
+    .chat-message { font-size: 13px; padding: 6px 12px; }
+    .pair-box { padding: 20px 15px; }
+    .pair-box h2 { font-size: 20px; }
+    .pair-input { font-size: 18px; padding: 12px; }
+    .start-chat-box { padding: 20px 15px; }
+    .start-chat-box h2 { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== 配对覆盖层 ========== -->
+<div class="pair-overlay" id="pairOverlay">
+    <div class="pair-box">
+        <div style="font-size:64px; margin-bottom:10px;">🤖</div>
+        <h2>👋 欢迎</h2>
+        <p class="sub">请输入家属给您的6位房间码</p>
+        <input type="text" id="roomCodeInput" class="pair-input" placeholder="000000" maxlength="6">
+        <button class="pair-btn" id="joinBtn">加入房间</button>
+        <br>
+        <a href="/" class="pair-back">← 返回首页</a>
+    </div>
+</div>
+
+<!-- ========== 新增：开始聊天覆盖层 ========== -->
+<div class="start-chat-overlay hidden" id="startChatOverlay">
+    <div class="start-chat-box">
+        <div style="font-size:64px; margin-bottom:10px;">🤖</div>
+        <h2>配对成功！</h2>
+        <p class="sub">准备好后点击下方按钮开始聊天</p>
+        <button class="start-chat-btn" id="startChatBtn">开始聊天</button>
+    </div>
+</div>
+
+<!-- ========== 新增：聊天结束覆盖层 ========== -->
+<div class="chat-end-overlay hidden" id="chatEndOverlay">
+    <div class="chat-end-box">
+        <div class="end-icon">✅</div>
+        <h2>聊天已结束</h2>
+        <p class="sub">有时间再聊呀！</p>
+        <p style="font-size:14px;color:#999;">祝您天天开心！</p>
+    </div>
+</div>
+
+<!-- ========== 主界面 ========== -->
+<div id="mainContainer" class="hidden">
+    <div class="robot-container" id="robotContainer">
+        <div class="robot" id="robot"></div>
+        <div class="status-badge" id="statusBadge">🤖 小帮</div>
+        <div class="breath-indicator">
+            <div class="breath-dot"></div>
+            <div class="breath-dot"></div>
+            <div class="breath-dot"></div>
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="input-group">
+            <input type="text" id="textInput" class="text-input" placeholder="✏️ 打字告诉我，或点击语音按钮..." />
+            <button class="btn" id="voiceBtn">🎤 开始录音</button>
+        </div>
+        <!-- 新增：结束聊天按钮 -->
+        <button class="end-chat-btn" id="endChatBtn">🛑 结束聊天</button>
+        <div class="chat-messages" id="chatMessages"></div>
+    </div>
+</div>
+
+<script>
+// ========== 配置 ==========
+const API_BASE = '/api';
+const SAVED_ROOM_KEY = 'elderly_room_code';
+
+// ========== DOM 元素 ==========
+const pairOverlay = document.getElementById('pairOverlay');
+const startChatOverlay = document.getElementById('startChatOverlay');
+const chatEndOverlay = document.getElementById('chatEndOverlay');
+const mainContainer = document.getElementById('mainContainer');
+const roomCodeInput = document.getElementById('roomCodeInput');
+const joinBtn = document.getElementById('joinBtn');
+const startChatBtn = document.getElementById('startChatBtn');
+const endChatBtn = document.getElementById('endChatBtn');
+
+const robot = document.getElementById('robot');
+const container = document.getElementById('robotContainer');
+const statusBadge = document.getElementById('statusBadge');
+const voiceBtn = document.getElementById('voiceBtn');
+const textInput = document.getElementById('textInput');
+const chatMessages = document.getElementById('chatMessages');
+
+// ========== 状态变量 ==========
+let isAnimating = false;
+let statusTimeout = null;
+let animationTimeout = null;
+let isPaired = false;
+let isChatting = false;
+let isRecording = false;
+let mediaRecorder = null;
+let chatStartTime = null;
+let currentRoomCode = null;   // 新增：存储房间码
+
+// ========== 工具函数 ==========
+function updatePlaceholder(){
+   if (window.innerWidth <= 480){
+       textInput.placeholder = '打字或语音...';
+   } else {
+       textInput.placeholder = '打字告诉我，或点击语音按钮...';
+   }
+}
+updatePlaceholder();
+
+function showStatus(text, emoji, duration) {
+    if (!emoji) emoji = '🤖';
+    if (!duration) duration = 3000;
+    statusBadge.textContent = emoji + ' ' + text;
+    statusBadge.classList.add('show');
+    clearTimeout(statusTimeout);
+    statusTimeout = setTimeout(() => {
+        statusBadge.classList.remove('show');
+    }, duration);
+}
+
+function resetToIdle(statusText, emoji) {
+    robot.classList.remove('jump', 'talk', 'think', 'happy');
+    robot.style.animation = 'none';
+    robot.offsetHeight;
+    robot.style.animation = '';
+    isAnimating = false;
+    if (statusText) showStatus(statusText, emoji);
+}
+
+function setRobotState(animationClass, statusText, emoji, duration) {
+    if (animationTimeout) {
+        clearTimeout(animationTimeout);
+        animationTimeout = null;
+    }
+    isAnimating = true;
+    robot.classList.remove('jump', 'talk', 'think', 'happy');
+    robot.style.animation = 'none';
+    robot.offsetHeight;
+    robot.classList.add(animationClass);
+    if (statusText) showStatus(statusText, emoji, duration || 3000);
+    if (duration > 0) {
+        animationTimeout = setTimeout(() => resetToIdle(), duration);
+    }
+}
+
+function addMessage(text, type) {
+    if (!type) type = 'user';
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'chat-message ' + type;
+    msgDiv.textContent = text;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    while (chatMessages.children.length > 5) {
+        chatMessages.removeChild(chatMessages.firstChild);
+    }
+}
+
+function getBotReply(userText) {
+    const replies = [
+        '嗯嗯，我在听呢！继续说~',
+        '原来是这样啊！',
+        '有意思！能再多说一点吗？',
+        '好的，我记住了！',
+        '然后呢？后来怎么样了？',
+        '哇，听起来真不错！',
+        '我明白你的意思了！',
+        '这个想法很好呀！'
+    ];
+    return replies[Math.floor(Math.random() * replies.length)];
+}
+
+function sendTextMessage() {
+    if (!isChatting) return;
+    const text = textInput.value.trim();
+    if (!text) {
+        showStatus('请输入内容', '✏️', 2000);
+        return;
+    }
+    if (isAnimating) return;
+    textInput.value = '';
+    addMessage(text, 'user');
+    setRobotState('think', '正在思考...', '', 0);
+    setTimeout(() => {
+        const reply = getBotReply(text);
+        addMessage(reply, 'bot');
+        setRobotState('happy', '回复你了', '😊', 2000);
+    }, 800 + Math.random() * 600);
+}
+
+// ========== 1. 配对房间 ==========
+joinBtn.onclick = async function() {
+    const code = roomCodeInput.value.trim();
+    if (!code || code.length !== 6) {
+        alert('请输入6位房间码');
+        return;
+    }
+    try {
+        this.disabled = true;
+        this.textContent = '⏳ 验证中...';
+        const res = await fetch(`${API_BASE}/join_room`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ room_code: code })
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || '验证失败');
+        }
+        const data = await res.json();
+        currentRoomCode = code;
+        // 保存到 localStorage
+        localStorage.setItem(SAVED_ROOM_KEY, code);
+        isPaired = true;
+        pairOverlay.classList.add('hidden');
+        startChatOverlay.classList.remove('hidden');
+        this.disabled = false;
+        this.textContent = '加入房间';
+    } catch (e) {
+        alert('加入失败: ' + e.message);
+        this.disabled = false;
+        this.textContent = '加入房间';
+    }
+};
+
+roomCodeInput.onkeydown = function(e) {
+    if (e.key === 'Enter') joinBtn.click();
+};
+
+roomCodeInput.oninput = function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 6);
+};
+
+// ========== 2. 开始聊天 ==========
+startChatBtn.onclick = async function() {
+    try {
+        this.disabled = true;
+        this.textContent = '⏳ 连接中...';
+        const res = await fetch(`${API_BASE}/start_dialogue`, { method: 'POST' });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || '启动失败');
+        }
+        const data = await res.json();
+        console.log('对话已开始:', data);
+        isChatting = true;
+        chatStartTime = new Date();
+        startChatOverlay.classList.add('hidden');
+        mainContainer.classList.remove('hidden');
+        addMessage('你好！我是小帮，很高兴陪您聊天！', 'bot');
+        showStatus('可以打字或语音和我聊天', '👋', 3000);
+    } catch (e) {
+        alert('连接失败: ' + e.message);
+    } finally {
+        this.disabled = false;
+        this.textContent = '开始聊天';
+    }
+};
+
+// ========== 3. 结束聊天 ==========
+endChatBtn.onclick = async function() {
+    if (isRecording) {
+        voiceBtn.click();
+        await new Promise(r => setTimeout(r, 500));
+    }
+    try {
+        endChatBtn.disabled = true;
+        endChatBtn.textContent = '⏳祝您天天开心！';
+        // 使用带房间码的接口
+        const res = await fetch(`${API_BASE}/end_dialogue_with_room`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ room_code: currentRoomCode })
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || '结束失败');
+        }
+        const data = await res.json();
+        console.log('报告:', data.reports);
+        isChatting = false;
+        isRecording = false;
+        chatMessages.innerHTML = '';
+        resetToIdle('', '');
+        mainContainer.classList.add('hidden');
+        startChatOverlay.classList.remove('hidden');
+    } catch (e) {
+        alert('结束失败: ' + e.message);
+    } finally {
+        endChatBtn.disabled = false;
+        endChatBtn.textContent = '🛑 结束聊天';
+    }
+};
+
+// ========== 4. 录音功能 ==========
+voiceBtn.onclick = async function() {
+    if (!isChatting) return;
+    if (isAnimating && !isRecording) return;
+
+    if (!isRecording) {
+        try {
+            const res = await fetch(`${API_BASE}/start_recording`, { method: 'POST' });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || '录音启动失败');
+            }
+            isRecording = true;
+            voiceBtn.textContent = '⏹️ 停止录音';
+            voiceBtn.classList.add('recording');
+            setRobotState('talk', '🔴 录音中...', '', 0);
+        } catch (e) {
+            showStatus('❌ ' + e.message, '', 2000);
+            console.error(e);
+        }
+    } else {
+        try {
+            voiceBtn.disabled = true;
+            voiceBtn.textContent = '⏳ 识别中...';
+            const res = await fetch(`${API_BASE}/stop_recording`, { method: 'POST' });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || '识别失败');
+            }
+            const data = await res.json();
+            isRecording = false;
+            voiceBtn.textContent = '🎤 开始录音';
+            voiceBtn.classList.remove('recording');
+            voiceBtn.disabled = false;
+
+            if (data.user_text) {
+                addMessage(data.user_text, 'user');
+            }
+            if (data.reply) {
+                setTimeout(() => {
+                    addMessage(data.reply, 'bot');
+                    setRobotState('happy', '回复你了', '😊', 2000);
+                }, 300);
+            } else {
+                showStatus('未识别到有效语音', '⚠️', 2000);
+            }
+        } catch (e) {
+            alert('识别失败: ' + e.message);
+            voiceBtn.disabled = false;
+            voiceBtn.textContent = '🎤 开始录音';
+            voiceBtn.classList.remove('recording');
+            isRecording = false;
+        }
+    }
+};
+
+// ========== 5. 其他交互 ==========
+container.addEventListener('click', function(e) {
+    if (!isChatting) return;
+    if (isAnimating) return;
+    const interactions = [
+        { state: 'jump', text: '嗨！我在呢！', emoji: '👋', duration: 1800 },
+        { state: 'talk', text: '在听你说哦~', emoji: '👂', duration: 2500 },
+        { state: 'happy', text: '今天真开心！', emoji: '😊', duration: 2000 },
+        { state: 'think', text: '让我想想...', emoji: '', duration: 2500 }
+    ];
+    const interaction = interactions[Math.floor(Math.random() * interactions.length)];
+    setRobotState(interaction.state, interaction.text, interaction.emoji, interaction.duration);
+    const robotMessages = ['嘿嘿~', '你点我啦！', '我在这呢！', '有什么事吗？'];
+    const msg = robotMessages[Math.floor(Math.random() * robotMessages.length)];
+    addMessage(msg, 'bot');
+});
+
+textInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendTextMessage();
+    }
+});
+
+textInput.addEventListener('focus', function() {
+    statusBadge.classList.remove('show');
+});
+
+container.addEventListener('mouseenter', function() {
+    if (!isAnimating) {
+        robot.style.animationPlayState = 'paused';
+    }
+});
+container.addEventListener('mouseleave', function() {
+    if (!isAnimating) {
+        robot.style.animationPlayState = 'running';
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.code === 'Space' && !e.repeat) {
+        const activeElement = document.activeElement;
+        if (activeElement && activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            voiceBtn.click();
+        }
+    }
+    if (e.code === 'Escape' && isRecording) {
+        e.preventDefault();
+        // 停止录音（调用后端停止接口）
+        fetch(`${API_BASE}/stop_recording`, { method: 'POST' }).catch(() => {});
+        voiceBtn.textContent = '🎤 开始录音';
+        voiceBtn.classList.remove('recording');
+        isRecording = false;
+        resetToIdle('录音已取消', '✋');
+    }
+});
+
+window.addEventListener('resize', function() {
+    const c = document.querySelector('.robot-container');
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (vw < 768) {
+        c.style.width = Math.min(vh * 0.5, vw * 0.6) + 'px';
+    } else {
+        c.style.width = Math.min(vh * 0.7, vw * 0.7) + 'px';
+    }
+    updatePlaceholder();
+});
+
+window.addEventListener('beforeunload', function() {
+    clearTimeout(statusTimeout);
+    clearTimeout(animationTimeout);
+    if (isRecording) {
+        fetch(`${API_BASE}/stop_recording`, { method: 'POST' }).catch(() => {});
+    }
+});
+
+// ========== 页面加载时自动恢复房间码 ==========
+(function autoJoin() {
+    const saved = localStorage.getItem(SAVED_ROOM_KEY);
+    if (saved) {
+        roomCodeInput.value = saved;
+        setTimeout(() => {
+            joinBtn.click();
+        }, 500);
+    }
+})();
+
+console.log('🚀 脑长青老人端已加载，API地址:', API_BASE);
+</script>
+</body>
+</html>
